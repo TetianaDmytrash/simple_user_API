@@ -11,4 +11,4 @@ ls -l target
 # Running the Python application
 echo 'The following command runs the Python application'
 source venv/bin/activate
-python main.py
+python userAPI.py

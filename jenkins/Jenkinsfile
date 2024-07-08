@@ -9,15 +9,19 @@ pipeline {
     stages {
         stage('Checkout Project') {
             steps {
-                // Клонируем репозиторий с исходным кодом
-                git url: "${PROJECT_REPO}", branch: 'master'
+                script {
+                    def PROJECT_REPO = 'https://github.com/TetianaDmytrash/simple_user_API.git'
+                    git url: PROJECT_REPO, branch: 'master'
+                }
             }
         }
         stage('Checkout Tests') {
             steps {
-                // Клонируем репозиторий с тестами
-                dir('tests') {
-                    git url: "${TEST_REPO}", branch: 'master'
+                script {
+                    dir('tests') {
+                        def TEST_REPO = 'https://github.com/TetianaDmytrash/TEST_simple_user_API.git'
+                        git url: TEST_REPO, branch: 'master'
+                    }
                 }
             }
         }

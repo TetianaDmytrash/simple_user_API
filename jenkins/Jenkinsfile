@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    environment {
+        REPO_URL = 'https://github.com/TetianaDmytrash/simple_user_API.git'
+        TEST_REPO_URL = 'https://github.com/TetianaDmytrash/TEST_simple_user_API.git'
+    }
+
+    stages {
+        stage('Checkout Source') {
+            steps {
+                git url: "${REPO_URL}", branch: 'master'
+            }
+        }
+        stage('Checkout Tests') {
+            steps {
+                dir('tests') {
+                    git url: "${TEST_REPO_URL}", branch: 'master'
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'python3 userAPI.py'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'pytest tests/'
+            }
+        }
+        stage('Deliver') {
+            steps {
+                sh './jenkins/scripts/deliver.sh'
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+            junit 'tests/test-results/*.xml'
+        }
+    }
+}

@@ -7,36 +7,49 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Source') {
+        stage('Checkout Project') {
             steps {
-                git url: "${REPO_URL}", branch: 'master'
+                // Клонируем репозиторий с исходным кодом
+                git url: "${PROJECT_REPO}", branch: 'master'
             }
         }
         stage('Checkout Tests') {
             steps {
+                // Клонируем репозиторий с тестами
                 dir('tests') {
-                    git url: "${TEST_REPO_URL}", branch: 'master'
+                    git url: "${TEST_REPO}", branch: 'master'
                 }
             }
         }
-        stage('Build') {
+        stage('Setup Environment') {
             steps {
-                sh 'python3 userAPI.py'
+                sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install -r requirements.txt
+                '''
             }
         }
-        stage('Test') {
+        stage('Run Tests') {
             steps {
-                sh 'pytest tests/'
+                sh '''
+                    . venv/bin/activate
+                    pytest tests/
+                '''
             }
         }
         stage('Deliver') {
             steps {
-                sh './jenkins/scripts/deliver.sh'
+                sh '''
+                    . venv/bin/activate
+                    ./jenkins/scripts/deliver.sh
+                '''
             }
         }
     }
     post {
         always {
+            // Сбор артефактов и результаты тестов
             archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
             junit 'tests/test-results/*.xml'
         }

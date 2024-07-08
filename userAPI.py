@@ -26,7 +26,7 @@ class APIConfig:
 
 
 server.config.from_object(APIConfig)
-server.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost/simple_API"
+server.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost:5433/simple_API"
 server.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(server)
 api = Api(server)

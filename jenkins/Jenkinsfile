@@ -1,61 +1,46 @@
 pipeline {
-    agent any
+	agent any 
 
-    environment {
-        REPO_URL = 'https://github.com/TetianaDmytrash/simple_user_API.git'
-        TEST_REPO_URL = 'https://github.com/TetianaDmytrash/TEST_simple_user_API.git'
-    }
-
-    stages {
-        stage('Checkout Project') {
+	stages {
+		stage ("checkout project") {
+			steps {
+				echo "check project code from main repo"
+				checkout scm
+				echo "teoreticaly done"
+			}
+		}
+		stage ("build and start docker compose") {
+			steps {
+				echo "start"
+				script {
+					sh 'docker-compose up -d --build'
+				}
+				echo "end"
+			}
+		}
+		stage ("checkout test") {
+			steps {
+				echo "checkout test proj"
+			}
+		}
+		stage ("run test") {
+			steps {
+				echo "run tests"
+			}
+		}
+		stage('Stop Docker Compose') {
             steps {
                 script {
-                    def PROJECT_REPO = 'https://github.com/TetianaDmytrash/simple_user_API.git'
-                    git url: PROJECT_REPO, branch: 'master'
+                    sh 'docker-compose down'
                 }
             }
         }
-        stage('Checkout Tests') {
-            steps {
-                script {
-                    dir('tests') {
-                        def TEST_REPO = 'https://github.com/TetianaDmytrash/TEST_simple_user_API.git'
-                        git url: TEST_REPO, branch: 'master'
-                    }
-                }
-            }
-        }
-        stage('Setup Environment') {
-            steps {
-                sh '''
-                    python3 -m venv venv
-                    . venv/bin/activate
-                    pip install -r requirements.txt
-                '''
-            }
-        }
-        stage('Run Tests') {
-            steps {
-                sh '''
-                    . venv/bin/activate
-                    pytest tests/
-                '''
-            }
-        }
-        stage('Deliver') {
-            steps {
-                sh '''
-                    . venv/bin/activate
-                    ./jenkins/scripts/deliver.sh
-                '''
-            }
-        }
-    }
-    post {
+	}
+
+	post {
         always {
-            // Сбор артефактов и результаты тестов
-            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
-            junit 'tests/test-results/*.xml'
+            // Убедитесь, что Docker Compose остановлен
+            sh 'docker-compose down'
         }
     }
 }

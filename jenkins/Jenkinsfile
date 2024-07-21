@@ -22,14 +22,14 @@ pipeline {
 		stage ("try build") {
 			steps {
 				script {
-					sh 'docker-compose --build'
+					sh 'docker-compose build'
 				}
 			}		
 		}
 		stage ("try up") {
 			steps {
 				script {
-					sh 'docker-compose up'
+					sh 'docker-compose up -d'
 				}
 			}		
 		}

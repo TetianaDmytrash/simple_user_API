@@ -9,7 +9,7 @@ pipeline {
 				echo "teoreticaly done"
 			}
 		}
-		stage ("build and start docker compose") {
+		stage ("see docker compose version") {
 			steps {
 				echo "start"
 				script {
@@ -18,6 +18,20 @@ pipeline {
 				}
 				echo "end"
 			}
+		}
+		stage ("try build") {
+			steps {
+				script {
+					sh 'docker-compose --build'
+				}
+			}		
+		}
+		stage ("try up") {
+			steps {
+				script {
+					sh 'docker-compose up'
+				}
+			}		
 		}
 		stage ("checkout test") {
 			steps {
